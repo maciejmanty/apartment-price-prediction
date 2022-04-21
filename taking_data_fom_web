@@ -1,0 +1,92 @@
+#imports
+import pandas as pd
+import requests
+from bs4 import BeautifulSoup as soup
+
+#lists
+headers = { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:82.0) Gecko/20100101 Firefox/82.0' }
+links = []
+apartment_names = []
+apartment_metre = []
+numbers_of_rooms = []
+floors = []
+balcony = []
+prices = []
+price_per_metre = []
+
+
+#getting links from the website
+page = 1
+while page < 4:
+    html = requests.get(f"https://www.otodom.pl/pl/oferty/sprzedaz/mieszkanie/czeladz?page={page}", headers = headers)
+    bsobj = soup(html.content, features="html.parser")
+    for data in bsobj.find_all('ul', class_='css-14cy79a e3x1uf06'):
+            for a in data.find_all('a'):
+                        links.append(f"https://www.otodom.pl/{(a.get('href'))}")
+    page = page + 1
+
+
+
+names = []
+values = []
+
+#getting information from every auction
+for link in links:
+    auction_html = requests.get(link, headers=headers).text
+    bsobj = soup(auction_html, features="html.parser")
+
+    #names
+    for h1 in bsobj.find_all('h1', class_='css-11kn46p eu6swcv19'):
+        apartment_names.append(h1.get_text(strip=True))
+
+    #apartment_metre
+    for h1 in bsobj.find_all('div', class_='css-1ccovha estckra9'):
+        temp_names = []
+        temp_names.append(h1.get_text(strip=True))
+        for x in temp_names:
+            if "Powierzchnia" in x:
+                apartment_metre.append(x)
+
+    #number_of_rooms
+    for h1 in bsobj.find_all('div', class_='css-1ccovha estckra9'):
+        temp_names = []
+        temp_names.append(h1.get_text(strip=True))
+        for x in temp_names:
+            if "Liczba pokoi" in x:
+                numbers_of_rooms.append(x)
+
+    #floor
+    for h1 in bsobj.find_all('div', class_='css-1ccovha estckra9'):
+        temp_names = []
+        temp_names.append(h1.get_text(strip=True))
+        for x in temp_names:
+            if "Piętro" in x:
+                floors.append(x)
+
+    #balcony
+    for h1 in bsobj.find_all('div', class_='css-1ccovha estckra9'):
+        temp_names = []
+        temp_names.append(h1.get_text(strip=True))
+        for x in temp_names:
+            if "Balkon" in x:
+                balcony.append(x)
+
+    #prices
+    for h1 in bsobj.find_all('strong', class_='css-8qi9av eu6swcv18'):
+        prices.append(h1.get_text(strip=True))
+
+    #prices
+    for h1 in bsobj.find_all('div', class_='css-1p44dor eu6swcv15'):
+        price_per_metre.append(h1.get_text(strip=True))
+
+#saving_to_csv
+apartment_info = {"name": apartment_names,
+                  "metrage": apartment_metre,
+                  "rooms": numbers_of_rooms,
+                  "floor": floors,
+                  "balcony": balcony,
+                  "price": prices,
+                  "price per metre": price_per_metre}
+
+df = pd.DataFrame.from_dict(apartment_info)
+df.to_csv("Czeladz mieszkania", index=False)
