@@ -82,11 +82,11 @@ for link in links:
 #saving_to_csv
 apartment_info = {"name": apartment_names,
                   "metrage": apartment_metre,
-                  "rooms": numbers_of_rooms,
+                  "number of rooms": numbers_of_rooms,
                   "floor": floors,
                   "balcony": balcony,
-                  "price": prices,
-                  "price per metre": price_per_metre}
+                  "price in zl": prices,
+                  "price per metre in zl": price_per_metre}
 
 df = pd.DataFrame.from_dict(apartment_info)
 df.to_csv("Czeladz mieszkania", index=False)
