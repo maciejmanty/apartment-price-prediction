@@ -81,7 +81,7 @@ for link in links:
 
 #saving_to_csv
 apartment_info = {"name": apartment_names,
-                  "metrage": apartment_metre,
+                  "metrage in m2": apartment_metre,
                   "number of rooms": numbers_of_rooms,
                   "floor": floors,
                   "balcony": balcony,
